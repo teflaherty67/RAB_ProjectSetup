@@ -27,50 +27,67 @@ namespace RAB_ProjectSetup
             Application app = uiapp.Application;
             Document doc = uidoc.Document;
 
-            Forms.OpenFileDialog dialog = new Forms.OpenFileDialog();
-            dialog.InitialDirectory = @"S:\Personal Folders\Training Material\ArchSmarter\Revit Add-in Bootcamp\Session 03";
-            dialog.Multiselect = false;
-            dialog.Filter = "CSV Files | *.csv; | All files | *.*";
-
-            if (dialog.ShowDialog() != Forms.DialogResult.OK)
-            {
-                TaskDialog.Show("Error", "Please select a CSV file");
-                return Result.Failed;
-            }
-
             // declare variables
 
-            string filePathLevels = @"S:\Personal Folders\Training Material\ArchSmarter\Revit Add-in Bootcamp\Session 02\RAB_Session_02_Challenge_Levels.csv";
-            string filePathSheets = @"S:\Personal Folders\Training Material\ArchSmarter\Revit Add-in Bootcamp\Session 02\RAB_Session_02_Challenge_Sheets.csv";
+            string levelPath = "";
+            string sheetPath = "";
 
-            List<string[]> levelData = new List<string[]>();
-            List<string[]> sheetData = new List<string[]>();
+            Forms.OpenFileDialog levelFile = new Forms.OpenFileDialog();
+            levelFile.InitialDirectory = @"S:\Personal Folders\Training Material\ArchSmarter\Revit Add-in Bootcamp\Session 03";
+            levelFile.Multiselect = false;
+            levelFile.Filter = "CSV Files | *.csv; | All files | *.*";            
+
+            Forms.OpenFileDialog sheetFile = new Forms.OpenFileDialog();
+            sheetFile.InitialDirectory = @"S:\Personal Folders\Training Material\ArchSmarter\Revit Add-in Bootcamp\Session 03";
+            sheetFile.Multiselect = false;
+            sheetFile.Filter = "CSV Files | *.csv; | All files | *.*";
+
+            if (levelFile.ShowDialog() != Forms.DialogResult.OK)
+            {
+                levelPath = levelFile.FileName;
+            }
+
+            if (sheetFile.ShowDialog() != Forms.DialogResult.OK)
+            {
+                sheetPath = sheetFile.FileName;
+            }
 
             // read text file data
 
-            string[] arrayLevels = File.ReadAllLines(filePathLevels);
-            string[] arraySheets = File.ReadAllLines(filePathSheets);
+            List<LevelData> levelDataList = new List<LevelData>();
+            List<SheetData> sheetDataList = new List<SheetData>();
+
+            string[] levelArray = File.ReadAllLines(levelPath);
+            string[] sheetArray = File.ReadAllLines(sheetPath);
 
             // loop through file data and put into lists
 
-            foreach (string levelString in arrayLevels)
+            foreach (string levelString in levelArray)
             {
                 string[] cellData = levelString.Split(',');
 
-                levelData.Add(cellData);
+                LevelData curLevelData = new LevelData();
+                curLevelData.LevelName = cellData[0];
+                curLevelData.LevelElevation = ConvertStringToDouble(cellData[1]);
+
+                levelDataList.Add(curLevelData);
             }
 
-            foreach (string sheetString in arraySheets)
+            foreach (string sheetString in sheetArray)
             {
                 string[] cellData = sheetString.Split(',');
 
-                sheetData.Add(cellData);
+                SheetData curSheetData = new SheetData();
+                curSheetData.SheetNumber = cellData[0];
+                curSheetData.SheetName = cellData[1];
+
+                sheetDataList.Add(curSheetData);
             }
 
             // remove header rows
 
-            levelData.RemoveAt(0);
-            sheetData.RemoveAt(0);
+            levelDataList.RemoveAt(0);
+            sheetDataList.RemoveAt(0);
 
             // create levels
 
@@ -118,5 +135,25 @@ namespace RAB_ProjectSetup
 
             return Result.Succeeded;
         }
+
+        private double ConvertStringToDouble(string numberString)
+        {
+            double levelHeight = 0;
+            bool convertString = double.TryParse(numberString, out levelHeight);
+
+            return levelHeight;
+        }
+
+        public struct LevelData
+        {
+            public string LevelName;
+            public double LevelElevation;
+        }
+         public struct SheetData
+        {
+            public string SheetNumber;
+            public string SheetName;
+        }
+
     }
 }
