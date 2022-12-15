@@ -11,7 +11,7 @@ using System.IO;
 
 #endregion
 
-namespace RAB_Session_02_Challenge
+namespace RAB_ProjectSetup
 {
     [Transaction(TransactionMode.Manual)]
     public class cmdProjectSetup : IExternalCommand
