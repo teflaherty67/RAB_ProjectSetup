@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using Forms = System.Windows.Forms;
 
 #endregion
 
@@ -16,12 +17,6 @@ namespace RAB_ProjectSetup
     [Transaction(TransactionMode.Manual)]
     public class cmdProjectSetup : IExternalCommand
     {
-        internal double ConvertMetersToFeet(double meters)
-        {
-            double feet = meters * 3.28084;
-
-            return feet;
-        }
         public Result Execute(
           ExternalCommandData commandData,
           ref string message,
@@ -31,6 +26,17 @@ namespace RAB_ProjectSetup
             UIDocument uidoc = uiapp.ActiveUIDocument;
             Application app = uiapp.Application;
             Document doc = uidoc.Document;
+
+            Forms.OpenFileDialog dialog = new Forms.OpenFileDialog();
+            dialog.InitialDirectory = @"S:\Personal Folders\Training Material\ArchSmarter\Revit Add-in Bootcamp\Session 03";
+            dialog.Multiselect = false;
+            dialog.Filter = "CSV Files | *.csv; | All files | *.*";
+
+            if (dialog.ShowDialog() != Forms.DialogResult.OK)
+            {
+                TaskDialog.Show("Error", "Please select a CSV file");
+                return Result.Failed;
+            }
 
             // declare variables
 
@@ -81,11 +87,6 @@ namespace RAB_ProjectSetup
                 {
                     TaskDialog.Show("Error", "Could not convert value. Defaulting to 0");
                 }
-
-                string stringMeters = curLevelData[2];
-                double heightMeters = 0;
-                bool convertMeters = double.TryParse(stringMeters, out heightMeters);
-                double metersToFeet = ConvertMetersToFeet(heightMeters);
 
                 Level curLevel = Level.Create(doc, levelHeight);
                 curLevel.Name = curLevelData[0];
