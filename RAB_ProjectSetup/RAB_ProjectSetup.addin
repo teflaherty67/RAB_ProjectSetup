@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RevitAddIns>
+  <AddIn Type="Command">
+    <Text>RAB Project Setup</Text>
+    <Description>Some description for RAB_ProjectSetup</Description>
+    <Assembly>RAB_ProjectSetup.dll</Assembly>
+    <FullClassName>RAB_ProjectSetup.cmdProjectSetup</FullClassName>
+    <ClientId>5f7abb39-f2e5-4f8f-adb2-f0101a1360e6</ClientId>
+    <VendorId>T Edward</VendorId>
+    <VendorDescription>T Edward Coder</VendorDescription>
+  </AddIn>
+  <AddIn Type="Application">
+    <Name>Application RAB_ProjectSetup</Name>
+    <Assembly>RAB_ProjectSetup.dll</Assembly>
+    <FullClassName>RAB_ProjectSetup.App</FullClassName>
+    <ClientId>f1b9047f-9b6b-409b-bdcb-8671bd6bcf25</ClientId>
+    <VendorId>T Edward</VendorId>
+    <VendorDescription>T Edward Coder</VendorDescription>
+  </AddIn>
+</RevitAddIns>
