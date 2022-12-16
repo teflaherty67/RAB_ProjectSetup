@@ -26,5 +26,37 @@ namespace RAB_ProjectSetup
 
             return null;
         }
+
+        public static ViewFamilyType GetViewFamilyTypeByName(Document doc, string vftName, ViewFamily vf)
+        {
+            FilteredElementCollector colVFT = new FilteredElementCollector(doc);
+            colVFT.OfClass(typeof(ViewFamilyType));
+
+            foreach(ViewFamilyType curVFT in colVFT)
+            {
+                if(curVFT.Name == vftName && curVFT.ViewFamily == vf)
+                {
+                    return curVFT;
+                }
+            }
+
+            return null;
+        }
+
+        public static View GetViewByName(Document doc, string name)
+        {
+            FilteredElementCollector colViewName = new FilteredElementCollector(doc);
+            {
+                foreach(View curView in colViewName)
+                {
+                    if(curView.Name == name)
+                    {
+                        return curView;
+                    }
+                }
+
+                return null;
+            }
+        }        
     }
 }

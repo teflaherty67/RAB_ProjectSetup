@@ -98,6 +98,18 @@ namespace RAB_ProjectSetup
             {
                 Level curLevel = Level.Create(doc, curLevelData.LevelElevation);
                 curLevel.Name = curLevelData.LevelName;
+
+                // get view family types
+
+                ViewFamilyType planVFT = Utils.GetViewFamilyTypeByName(doc, "Floor Plan", ViewFamily.FloorPlan);
+                ViewFamilyType rcpVFT = Utils.GetViewFamilyTypeByName(doc, "Celing Plan", ViewFamily.CeilingPlan);
+
+                // create floor plan & RCP views
+
+                ViewPlan curFloor = ViewPlan.Create(doc, planVFT.Id, curLevel.Id);
+                ViewPlan curRCP = ViewPlan.Create(doc, rcpVFT.Id, curLevel.Id);
+                curFloor.Name = curFloor.Name + "Floor Plan";
+                curRCP.Name = curRCP.Name + "RCP";
             }
 
             t1.Commit();
@@ -118,13 +130,18 @@ namespace RAB_ProjectSetup
 
                 curSheet.SheetNumber = curSheetData.SheetNumber;
                 curSheet.Name = curSheetData.SheetName;
+
+                View curView = Utils.GetViewByName(doc, curSheet.Name);
+                XYZ insPoint = new XYZ(1, 1, 0);
+
+                Viewport curViewport = Viewport.Create(doc, curSheet.Id, curView.Id, insPoint);
             }
 
             t2.Commit();
             t2.Dispose();
 
             return Result.Succeeded;
-        }
+        }       
 
         private double ConvertStringToDouble(string numberString)
         {
