@@ -94,19 +94,10 @@ namespace RAB_ProjectSetup
             Transaction t1 = new Transaction(doc);
             t1.Start("Create Levels");
 
-            foreach (string[] curLevelData in levelData)
+            foreach (LevelData curLevelData in levelDataList)
             {
-                string stringHeight = curLevelData[1];
-                double levelHeight = 0;
-                bool convertFeet = double.TryParse(stringHeight, out levelHeight);
-
-                if (convertFeet == false)
-                {
-                    TaskDialog.Show("Error", "Could not convert value. Defaulting to 0");
-                }
-
-                Level curLevel = Level.Create(doc, levelHeight);
-                curLevel.Name = curLevelData[0];
+                Level curLevel = Level.Create(doc, curLevelData.LevelElevation);
+                curLevel.Name = curLevelData.LevelName;
             }
 
             t1.Commit();
@@ -114,20 +105,19 @@ namespace RAB_ProjectSetup
 
             // get titleblock element ID
 
-            FilteredElementCollector colTBlocks = new FilteredElementCollector(doc);
-            colTBlocks.OfCategory(BuiltInCategory.OST_TitleBlocks);
-            ElementId tblockID = colTBlocks.FirstElementId();
+            Element tBlock = Utils.GetTitleBlockByName(doc, "E1 30x42 Horizontal");           
 
             // create sheets
 
             Transaction t2 = new Transaction(doc);
             t2.Start("Create Sheets");
 
-            foreach (string[] curSheetData in sheetData)
+            foreach (SheetData curSheetData in sheetDataList)
             {
-                ViewSheet curSheet = ViewSheet.Create(doc, tblockID);
-                curSheet.SheetNumber = curSheetData[0];
-                curSheet.Name = curSheetData[1];
+                ViewSheet curSheet = ViewSheet.Create(doc, tBlock.Id);
+
+                curSheet.SheetNumber = curSheetData.SheetNumber;
+                curSheet.Name = curSheetData.SheetName;
             }
 
             t2.Commit();
