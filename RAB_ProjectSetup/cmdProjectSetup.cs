@@ -33,21 +33,21 @@ namespace RAB_ProjectSetup
             string sheetPath = "";
 
             Forms.OpenFileDialog levelFile = new Forms.OpenFileDialog();
-            levelFile.InitialDirectory = @"S:\Personal Folders\Training Material\ArchSmarter\Revit Add-in Bootcamp\Session 03";
+            levelFile.InitialDirectory = @"S:\Personal Folders\Training Material\ArchSmarter\Revit Add-in Bootcamp";
             levelFile.Multiselect = false;
             levelFile.Filter = "CSV Files | *.csv; | All files | *.*";            
 
             Forms.OpenFileDialog sheetFile = new Forms.OpenFileDialog();
-            sheetFile.InitialDirectory = @"S:\Personal Folders\Training Material\ArchSmarter\Revit Add-in Bootcamp\Session 03";
+            sheetFile.InitialDirectory = @"S:\Personal Folders\Training Material\ArchSmarter\Revit Add-in Bootcamp";
             sheetFile.Multiselect = false;
             sheetFile.Filter = "CSV Files | *.csv; | All files | *.*";
 
-            if (levelFile.ShowDialog() != Forms.DialogResult.OK)
+            if (levelFile.ShowDialog() == Forms.DialogResult.OK)
             {
                 levelPath = levelFile.FileName;
             }
 
-            if (sheetFile.ShowDialog() != Forms.DialogResult.OK)
+            if (sheetFile.ShowDialog() == Forms.DialogResult.OK)
             {
                 sheetPath = sheetFile.FileName;
             }
@@ -102,14 +102,23 @@ namespace RAB_ProjectSetup
                 // get view family types
 
                 ViewFamilyType planVFT = Utils.GetViewFamilyTypeByName(doc, "Floor Plan", ViewFamily.FloorPlan);
-                ViewFamilyType rcpVFT = Utils.GetViewFamilyTypeByName(doc, "Celing Plan", ViewFamily.CeilingPlan);
+                ViewFamilyType rcpVFT = Utils.GetViewFamilyTypeByName(doc, "Ceiling Plan", ViewFamily.CeilingPlan);
 
                 // create floor plan & RCP views
 
                 ViewPlan curFloor = ViewPlan.Create(doc, planVFT.Id, curLevel.Id);
                 ViewPlan curRCP = ViewPlan.Create(doc, rcpVFT.Id, curLevel.Id);
-                curFloor.Name = curFloor.Name + "Floor Plan";
-                curRCP.Name = curRCP.Name + "RCP";
+
+                if(curFloor.Name.Contains("Roof") == true)
+                {
+                    curFloor.Name = "Roof Plan";
+                }
+                else
+                {
+                    curFloor.Name = curFloor.Name + " Floor Plan";
+                }
+                
+                curRCP.Name = curRCP.Name + " RCP";
             }
 
             t1.Commit();
@@ -132,7 +141,8 @@ namespace RAB_ProjectSetup
                 curSheet.Name = curSheetData.SheetName;
 
                 View curView = Utils.GetViewByName(doc, curSheet.Name);
-                XYZ insPoint = new XYZ(1, 1, 0);
+
+                XYZ insPoint = Utils.GetSheetCenterPoint(curSheet);
 
                 Viewport curViewport = Viewport.Create(doc, curSheet.Id, curView.Id, insPoint);
             }

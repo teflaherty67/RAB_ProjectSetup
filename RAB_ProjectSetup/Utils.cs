@@ -46,6 +46,7 @@ namespace RAB_ProjectSetup
         public static View GetViewByName(Document doc, string name)
         {
             FilteredElementCollector colViewName = new FilteredElementCollector(doc);
+            colViewName.OfCategory(BuiltInCategory.OST_Views);
             {
                 foreach(View curView in colViewName)
                 {
@@ -57,6 +58,18 @@ namespace RAB_ProjectSetup
 
                 return null;
             }
-        }        
+        }
+        
+        public static XYZ GetSheetCenterPoint(ViewSheet curSheet)
+        {
+            BoundingBoxUV outline = curSheet.Outline;
+
+            double x = (outline.Max.U + outline.Min.U) / 2;
+            double y = (outline.Max.V + outline.Min.V) / 2;
+
+            XYZ returnPoint = new XYZ(x, y, 0);
+
+            return returnPoint;
+        }
     }
 }
